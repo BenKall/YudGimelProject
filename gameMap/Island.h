@@ -16,22 +16,24 @@ public:
 	const sf::FloatRect GetBounds() const;
 
 	void DivideAntsContained();
-	void AddAntsContained(int amount);
+	void ChangeAntsContained(int amount, ISLANDSTATUS status);
 
 	void SetText(int newNumber);
+	void SetPosRelativeToScreen(int screenWidth, int screenHeight);
 
 	//Accessor
 	const sf::Vector2f& GetPos() const;
 	const sf::CircleShape getShape() const;
 	const sf::Color GetOutlineColor() const;
-	const int GetAntsContained() const;
-	const ISLANDSTATUS GetStatus() const;
+	const int& GetAntsContained() const;
+	const ISLANDSTATUS& GetStatus() const;
 
 	//Modifiers
 	void setPosition(const sf::Vector2f pos);
 	void setPosition(const float x, const float y);
 	void SetOutlineColor(const sf::Color color);
 	void SetAntsContained(const sf::Color color);
+	void SetStatusColors(ISLANDSTATUS status);
 
 	void Render(sf::RenderWindow& target);
 
@@ -43,8 +45,6 @@ private:
 	//Who is in control of the island
 	ISLANDSTATUS status;
 	int antsContained;
-	//Private functions
-	void InitIsland();
 };
 
 #endif

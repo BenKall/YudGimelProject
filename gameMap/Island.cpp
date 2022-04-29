@@ -1,6 +1,6 @@
 #include "Island.h"
 
-void Island::InitIsland()
+Island::Island(sf::Vector2f pos, int antsContained, ISLANDSTATUS status)
 {
 	this->ilShape.setRadius(80.f);
 	this->ilShape.setOutlineColor(DEFAULTCOLOR);
@@ -10,20 +10,16 @@ void Island::InitIsland()
 
 	//Set text
 	this->ilFont = AssetManager::GetFont("Assets/Fonts/space age.ttf");
-
 	this->ilText.setFont(ilFont);
 	this->ilText.setCharacterSize(74);
 	this->ilText.setFillColor(sf::Color::Black);
-	this->ilText.setOutlineColor(sf::Color::White);
-	this->ilText.setOutlineThickness(3.0f);
-}
-
-Island::Island(sf::Vector2f pos, int antsContained, ISLANDSTATUS status)
-{
-	InitIsland();
-
+	this->ilText.setOutlineColor(DEFAULTCOLOR);
+	this->ilText.setOutlineThickness(3.f);
 	//Set status
 	this->status = status;
+
+	//Set outlines
+	SetStatusColors(status);
 
 	this->ilShape.setPosition(pos.x, pos.y);
 	this->ilText.setPosition(pos.x + ilShape.getLocalBounds().width / 2, pos.y + ilShape.getLocalBounds().height / 2);
@@ -45,9 +41,27 @@ void Island::DivideAntsContained()
 	SetText(this->antsContained);
 }
 
-void Island::AddAntsContained(int amount)
+void Island::ChangeAntsContained(int amount, ISLANDSTATUS status)
 {
-	this->antsContained += amount;
+	if (this->status == status)
+	{
+		this->antsContained += amount;
+	}
+	else
+	{
+		int newAmount = this->antsContained - amount;
+		if (newAmount < 0)
+		{
+			this->status = status;
+			SetStatusColors(status);
+		}
+		if (newAmount == 0)
+		{
+			this->status = NEUTRAL;
+			SetStatusColors(NEUTRAL);
+		}
+		this->antsContained = abs(newAmount);
+	}
 	SetText(this->antsContained);
 }
 
@@ -57,9 +71,55 @@ void Island::SetText(int newNumber)
 	this->ilText.setOrigin(ilText.getLocalBounds().width / 2, (ilText.getLocalBounds().height / 2) + ilText.getCharacterSize() / 2);
 }
 
+void Island::SetPosRelativeToScreen(int screenWidth, int screenHeight)
+{
+	this->ilShape.setRadius((screenWidth + screenHeight) / 2 / 14);
+	this->ilShape.setOutlineThickness(this->ilShape.getRadius() / 16);
+	this->ilShape.setPosition(
+		this->ilShape.getPosition().x * screenWidth,
+		this->ilShape.getPosition().y * screenHeight
+	);
+	/*this->ilShape.setOrigin(ilShape.getGlobalBounds().width / 2,
+		ilShape.getGlobalBounds().height / 2)*/
+	this->ilText.setCharacterSize(this->ilShape.getRadius());
+	this->ilText.setOutlineThickness(this->ilText.getCharacterSize() / 16);
+
+	this->ilText.setPosition(
+		this->ilShape.getPosition().x + ilShape.getLocalBounds().width / 2,
+		this->ilShape.getPosition().y + ilShape.getLocalBounds().height / 2
+	);
+	this->ilText.setOrigin(ilText.getLocalBounds().width / 2, (ilText.getLocalBounds().height / 2) + ilText.getCharacterSize() / 2);
+
+}
+
 void Island::SetOutlineColor(const sf::Color color)
 {
 	this->ilShape.setOutlineColor(color);
+}
+
+void Island::SetStatusColors(ISLANDSTATUS status)
+{
+	//Set shape outline
+	this->ilShape.setOutlineColor(DEFAULTCOLOR);
+	if (status == CONTROLOFPLAYER)
+	{
+		this->ilShape.setOutlineColor(PLAYERCOLOR);
+	}
+	if (status == CONTROLOFENEMY)
+	{
+		this->ilShape.setOutlineColor(ENEMYCOLOR);
+	}
+
+	//Set text outline
+	this->ilText.setOutlineColor(DEFAULTCOLOR);
+	if (status == CONTROLOFPLAYER)
+	{
+		this->ilText.setOutlineColor(TXTPLAYERCOLOR);
+	}
+	if (status == CONTROLOFENEMY)
+	{
+		this->ilText.setOutlineColor(TXTENEMYCOLOR);
+	}
 }
 
 const sf::Vector2f & Island::GetPos() const
@@ -72,12 +132,12 @@ const sf::Color Island::GetOutlineColor() const
 	return this->ilShape.getOutlineColor();
 }
 
-const int Island::GetAntsContained() const
+const int& Island::GetAntsContained() const
 {
 	return this->antsContained;
 }
 
-const ISLANDSTATUS Island::GetStatus() const
+const ISLANDSTATUS& Island::GetStatus() const
 {
 	return this->status;
 }

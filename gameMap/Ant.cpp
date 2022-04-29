@@ -1,6 +1,6 @@
 #include "Ant.h"
 
-Ant::Ant(sf::Vector2f spawnPoint, sf::Vector2f despawnPoint, int spawnCoordinate, int despawnCoordinate, float movementSpeed, int antsContained, int screenWidth, int screenHeight)
+Ant::Ant(sf::Vector2f spawnPoint, sf::Vector2f despawnPoint, int spawnCoordinate, int despawnCoordinate, float movementSpeed, int antsContained, ISLANDSTATUS status, int screenWidth, int screenHeight)
 {
 	//Sprite initiation
 	this->antSprite.setTexture(AssetManager::GetTexture("Assets/Textures/ant1.png"));
@@ -17,6 +17,9 @@ Ant::Ant(sf::Vector2f spawnPoint, sf::Vector2f despawnPoint, int spawnCoordinate
 
 	//Set text
 	this->antFont = AssetManager::GetFont("Assets/Fonts/space age.ttf");
+
+	//Set status
+	this->status = status;
 
 	this->antText.setFont(antFont);
 	this->antText.setCharacterSize(24);
@@ -60,6 +63,11 @@ const int Ant::GetDespawnCoordinate() const
 const int Ant::GetAntAmount() const
 {
 	return this->antAmount;
+}
+
+const ISLANDSTATUS Ant::GetStatus() const
+{
+	return this->status;
 }
 
 bool Ant::IsAntDone()

@@ -2,22 +2,20 @@
 
 Game::Game()
 {
-	ilFirstClckd = -1;
-	ilSecondClckd = -1;
-	this->deltaTime = sf::milliseconds(1000);
 	initWindow();
 	initShader();
 	initBackground();
 	initIsland();
+	initAiEnemy();
 }
 
 Game::~Game()
 {
 	delete this->window;
 
-	for (int i = 0; i < ILNUMLEVEL1; i++)
+	for (int i = 0; i < this->curLevel.size; i++)
 	{
-		delete islands[i];
+		delete this->curLevel.islands[i];
 	}
 
 	//Delete bridges
@@ -68,7 +66,7 @@ void Game::UpdateMouse()
 
 bool Game::IsLineExist(int i, int j)
 {
-	if (bridgesCoordinates[i][j])
+	if (this->curLevel.bridgesCoordinates[i][j])
 		return true;
 	return false;
 }
@@ -76,13 +74,13 @@ bool Game::IsLineExist(int i, int j)
 void Game::CreateBridge(int i, int j, int weight)
 {
 	sf::Vector2f ilPos1 = sf::Vector2f(
-		this->islands[i]->GetPos().x + this->islands[i]->GetBounds().width / 2,
-		this->islands[i]->GetPos().y + this->islands[i]->GetBounds().height / 2);
+		this->curLevel.islands[i]->GetPos().x + this->curLevel.islands[i]->GetBounds().width / 2,
+		this->curLevel.islands[i]->GetPos().y + this->curLevel.islands[i]->GetBounds().height / 2);
 	sf::Vector2f ilPos2 = sf::Vector2f(
-		this->islands[j]->GetPos().x + this->islands[j]->GetBounds().width / 2,
-		this->islands[j]->GetPos().y + this->islands[j]->GetBounds().height / 2);
+		this->curLevel.islands[j]->GetPos().x + this->curLevel.islands[j]->GetBounds().width / 2,
+		this->curLevel.islands[j]->GetPos().y + this->curLevel.islands[j]->GetBounds().height / 2);
 
-	Bridge* tmpBridge = new Bridge(ilPos1, ilPos2, weight);
+	Bridge* tmpBridge = new Bridge(ilPos1, ilPos2, weight, SCREENW, SCREENH);
 
 	this->bridges.push_back(tmpBridge);
 
@@ -90,104 +88,62 @@ void Game::CreateBridge(int i, int j, int weight)
 
 void Game::CreateAnt(int i, int j, int weight)
 {
-	sf::Vector2f spawnPoint = sf::Vector2f(
-		this->islands[i]->GetPos().x + this->islands[i]->GetBounds().width / 2,
-		this->islands[i]->GetPos().y + this->islands[i]->GetBounds().height / 2);
-	sf::Vector2f despawnPoint = sf::Vector2f(
-		this->islands[j]->GetPos().x + this->islands[j]->GetBounds().width / 2,
-		this->islands[j]->GetPos().y + this->islands[j]->GetBounds().height / 2);
-
-	// movementSpeed = every second move ant (1 / weight) of your way,
-	// so that it will take the ant (weight) seconds to reach the goal
-	float movementSpeed = 1 / static_cast<float>(weight) / FRAMERATE;
-	Ant* tmpAnt = new Ant(spawnPoint, despawnPoint, i, j, movementSpeed, this->islands[i]->GetAntsContained(), SCREENW, SCREENH);
-
-	this->ants.push_back(tmpAnt);
-
-	//Update island info
-	islands[i]->DivideAntsContained();
-}
-
-//-----------------------------------------------------------------
-//                      Calculate Length
-//                      ----------------
-// 
-// Calculates the length between the previous position of the mouse
-// and its current position.
-//-----------------------------------------------------------------
-float Game::CalculateLength(sf::Vector2f ilPos1, sf::Vector2f ilPos2)
-{
-	return sqrt((ilPos1.x - ilPos2.x) * (ilPos1.x - ilPos2.x) +
-		(ilPos1.y - ilPos2.y) * (ilPos1.y - ilPos2.y));
-}
-
-//-----------------------------------------------------------------
-//                        Calculate Angle
-//                        ----------------
-// 
-// Calculates the angle between the previous position of the mouse
-// and its current position.
-// Doing so by calculating the inverse tangent of the adjacent and
-// opposite sides of a triangle created with the two points.
-// Then checks the direction of the drawn line in order to rotate
-// the drawn rectangle correctly. 
-//-----------------------------------------------------------------
-float Game::CalculateAngle(sf::Vector2f ilPos1, sf::Vector2f ilPos2)
-{
-
-	float HorizontalDiff = ilPos1.x - ilPos2.x;
-	float VerticalDiff = ilPos1.y - ilPos2.y;
-	if (HorizontalDiff != 0)
+	if (this->curLevel.islands[i]->GetAntsContained() > 1)
 	{
-		double finalAngle = atan(abs(VerticalDiff) / abs(HorizontalDiff)) * (180 / M_PI);
+		sf::Vector2f spawnPoint = sf::Vector2f(
+			this->curLevel.islands[i]->GetPos().x + this->curLevel.islands[i]->GetBounds().width / 2,
+			this->curLevel.islands[i]->GetPos().y + this->curLevel.islands[i]->GetBounds().height / 2);
+		sf::Vector2f despawnPoint = sf::Vector2f(
+			this->curLevel.islands[j]->GetPos().x + this->curLevel.islands[j]->GetBounds().width / 2,
+			this->curLevel.islands[j]->GetPos().y + this->curLevel.islands[j]->GetBounds().height / 2);
 
-		if (HorizontalDiff < 0 && VerticalDiff < 0 ||
-			HorizontalDiff > 0 && VerticalDiff > 0) // From top left to bottom right or the opposite
-			finalAngle += (HorizontalDiff > 0) ? -180 : 0;
+		// movementSpeed = every second move ant (1 / weight) of your way,
+		// so that it will take the ant (weight) seconds to reach the goal
+		float movementSpeed = 1 / static_cast<float>(weight) / FRAMERATE;
+		Ant* tmpAnt = new Ant(
+			spawnPoint, despawnPoint,
+			i, j, movementSpeed,
+			this->curLevel.islands[i]->GetAntsContained(),
+			this->curLevel.islands[i]->GetStatus(),
+			SCREENW, SCREENH);
 
-		if (HorizontalDiff < 0 && VerticalDiff > 0) // From top right to bottom left
-			finalAngle = -finalAngle ;
-		if (HorizontalDiff > 0 && VerticalDiff < 0) // From bottom left to top right
-			finalAngle = -finalAngle - 180;
+		this->ants.push_back(tmpAnt);
 
-		if (VerticalDiff == 0) // From left to right or the opposite
-			finalAngle = (HorizontalDiff > 0) ? -180 : 0;
-
-		return finalAngle;
+		//Update island info
+		this->curLevel.islands[i]->DivideAntsContained();
 	}
-	return (VerticalDiff > 0) ? 0 : 180; // From top to bottom or the opposite
-
 }
+	
 
 void Game::UpdateIslands()
 {
 	int flagIncreament = 0;
-	elapsedTime += r.restart();
+	elapsedTime += clock.restart();
 	if (this->elapsedTime >= this->deltaTime)
 	{
 		flagIncreament = 1;
 		this->elapsedTime -= this->deltaTime;
 	}
 	this->flagShader = 0;
-	for (int i = 0; i < ILNUMLEVEL1; i++)
+	for (int i = 0; i < this->curLevel.size; i++)
 	{
 		//Increament ant amount
-		if (this->islands[i]->GetStatus())
+		if (this->curLevel.islands[i]->GetStatus())
 		{
-			this->islands[i]->AddAntsContained(flagIncreament);
+			this->curLevel.islands[i]->ChangeAntsContained(flagIncreament, this->curLevel.islands[i]->GetStatus());
 		}
 
 
 
-		sf::Color curColor = this->islands[i]->GetOutlineColor();
+		sf::Color curColor = this->curLevel.islands[i]->GetOutlineColor();
 		//if mouse is hovering over the shape
-		if (this->islands[i]->GetBounds().contains(this->mousePosView))
+		if (this->curLevel.islands[i]->GetBounds().contains(this->mousePosView))
 		{
 			this->flagShader = 1;
 			backShader->setUniform("light", 
 				sf::Vector2f(
-					this->islands[i]->GetPos().x + this->islands[i]->GetBounds().width / 2,
-					this->islands[i]->GetPos().y + this->islands[i]->GetBounds().height / 2)
+					this->curLevel.islands[i]->GetPos().x + this->curLevel.islands[i]->GetBounds().width / 2,
+					this->curLevel.islands[i]->GetPos().y + this->curLevel.islands[i]->GetBounds().height / 2)
 			); 
 			//if mouse is pressed
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -200,12 +156,12 @@ void Game::UpdateIslands()
 					if (this->ilClicked[i] == 0)
 					{
 						this->ilClicked[i] = 1;
-						this->islands[i]->SetOutlineColor(PLAYERCOLOR);
+						this->curLevel.islands[i]->SetOutlineColor(TXTPLAYERCOLOR);
 					}
 					else if (this->ilClicked[i] == 1)
 					{
 						this->ilClicked[i] = 0;
-						this->islands[i]->SetOutlineColor(DEFAULTCOLOR);
+						this->curLevel.islands[i]->SetStatusColors(this->curLevel.islands[i]->GetStatus());
 					}
 
 					//Set selection
@@ -224,19 +180,19 @@ void Game::UpdateIslands()
 							//Second selection
 							ilSecondClckd = i;
 							//Check if there is bridge connecting the islands
-							if (bridgesCoordinates[ilFirstClckd][ilSecondClckd])
+							if (this->curLevel.bridgesCoordinates[ilFirstClckd][ilSecondClckd])
 							{
-								CreateAnt(ilFirstClckd, ilSecondClckd, bridgesCoordinates[ilFirstClckd][ilSecondClckd]);
+								CreateAnt(ilFirstClckd, ilSecondClckd, this->curLevel.bridgesCoordinates[ilFirstClckd][ilSecondClckd]);
 							}
-							if (bridgesCoordinates[ilSecondClckd][ilFirstClckd])
+							if (this->curLevel.bridgesCoordinates[ilSecondClckd][ilFirstClckd])
 							{
-								CreateAnt(ilFirstClckd, ilSecondClckd, bridgesCoordinates[ilSecondClckd][ilFirstClckd]);
+								CreateAnt(ilFirstClckd, ilSecondClckd, this->curLevel.bridgesCoordinates[ilSecondClckd][ilFirstClckd]);
 							}
-							if (bridgesCoordinates[ilFirstClckd][ilSecondClckd] == 0 &&
-								bridgesCoordinates[ilSecondClckd][ilFirstClckd] == 0)
+							if (this->curLevel.bridgesCoordinates[ilFirstClckd][ilSecondClckd] == 0 &&
+								this->curLevel.bridgesCoordinates[ilSecondClckd][ilFirstClckd] == 0)
 							{
 								this->ilClicked[ilFirstClckd] = 0;
-								this->islands[ilFirstClckd]->SetOutlineColor(DEFAULTCOLOR);
+								this->curLevel.islands[ilFirstClckd]->SetStatusColors(this->curLevel.islands[ilFirstClckd]->GetStatus());
 								ilFirstClckd = i;
 								ilSecondClckd = -1;
 							}
@@ -244,6 +200,10 @@ void Game::UpdateIslands()
 						if (ilSecondClckd != -1)
 						{
 							//Undo selection
+							this->curLevel.islands[ilFirstClckd]->SetStatusColors(this->curLevel.islands[ilFirstClckd]->GetStatus());
+							this->curLevel.islands[ilSecondClckd]->SetStatusColors(this->curLevel.islands[ilSecondClckd]->GetStatus());
+							this->ilClicked[ilFirstClckd] = 0;
+							this->ilClicked[ilSecondClckd] = 0;
 							ilFirstClckd = -1;
 							ilSecondClckd = -1;
 						}
@@ -267,8 +227,14 @@ void Game::UpdateIslands()
 				this->islands[i]->setOutlineColor(DEFAULTCOLOR);
 			}*/
 		}
+	}
 
+	//Ai
+	std::vector<AntBuildParameters> aiDecision = ai->Think(curLevel, *AiEnemy::AiAgressive);
 
+	for (auto i : aiDecision)
+	{
+		CreateAnt(i.startCoordinate, i.endCoordinate, i.weight);
 	}
 }
 
@@ -281,13 +247,85 @@ void Game::UpdateAnts()
 
 		if (ant->IsAntDone())
 		{
-			islands[ant->GetDespawnCoordinate()]->AddAntsContained(ant->GetAntAmount());
+			this->curLevel.islands[ant->GetDespawnCoordinate()]->ChangeAntsContained(ant->GetAntAmount(), ant->GetStatus());
 			//Delete ant
 			delete this->ants.at(counter);
 			this->ants.erase(this->ants.begin() + counter);
 		}
 
 		counter++;
+	}
+}
+
+void Game::writeLevel(std::string fileName)
+{
+	std::ofstream levelFile(fileName, std::ios::out | std::ios::binary);
+	if (!levelFile) {
+		std::cout << "Cannot open file!" << std::endl;
+	}
+	if (levelFile.is_open())
+	{
+		levelFile.write((char *)&this->curLevel.size, sizeof(int));
+		for (size_t i = 0; i < this->curLevel.size; i++)
+		{
+			levelFile.write((char *)&this->curLevel.islands[i]->GetPos(), sizeof(sf::Vector2f));
+			levelFile.write((char *)&this->curLevel.islands[i]->GetAntsContained(), sizeof(int));
+			levelFile.write((char *)&this->curLevel.islands[i]->GetStatus(), sizeof(ISLANDSTATUS));
+		}
+
+		for (size_t i = 0; i < this->curLevel.size; i++)
+		{
+			for (size_t j = 0; j < this->curLevel.size; j++)
+			{
+				levelFile.write((char *)&this->curLevel.bridgesCoordinates[i][j], sizeof(int));
+			}
+		}
+		levelFile.close();
+	}
+	if (!levelFile.good()) {
+		std::cout << "Error occurred at writing time!" << std::endl;
+	}
+
+}
+
+void Game::readLevel(std::string fileName)
+{
+	std::ifstream levelFileRead(fileName, std::ios::in | std::ios::binary);
+	if (!levelFileRead) {
+		std::cout << "Cannot open file!" << std::endl;
+	}
+	if (levelFileRead.is_open())
+	{
+		levelFileRead.read((char *)&this->curLevel.size, sizeof(int));
+		this->curLevel.islands = new Island *[this->curLevel.size];
+		for (size_t i = 0; i < this->curLevel.size; i++)
+		{
+			sf::Vector2f tmpVc2f;
+			int tmpN;
+			ISLANDSTATUS tmpIls;
+			levelFileRead.read((char *)&tmpVc2f, sizeof(sf::Vector2f));
+			levelFileRead.read((char *)&tmpN, sizeof(int));
+			levelFileRead.read((char *)&tmpIls, sizeof(ISLANDSTATUS));
+			this->curLevel.islands[i] = new Island(tmpVc2f, tmpN, tmpIls);
+		}
+
+		this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size, sizeof(int*));
+		for (size_t i = 0; i < this->curLevel.size; i++)
+		{
+			this->curLevel.bridgesCoordinates[i] = (int*)calloc(this->curLevel.size, sizeof(int));
+		}
+
+		for (size_t i = 0; i < this->curLevel.size; i++)
+		{
+			for (size_t j = 0; j < this->curLevel.size; j++)
+			{
+				levelFileRead.read((char *)&this->curLevel.bridgesCoordinates[i][j], sizeof(int));
+			}
+		}
+		levelFileRead.close();
+	}
+	if (!levelFileRead.good()) {
+		std::cout << "Error occurred at writing time!" << std::endl;
 	}
 }
 
@@ -319,47 +357,59 @@ void Game::Render()
 	{
 		ant->Render(this->window);
 	}
-	for (int i = 0; i < ILNUMLEVEL1; i++)
+	for (int i = 0; i < this->curLevel.size; i++)
 	{
-		islands[i]->Render(*(this->window));
+		this->curLevel.islands[i]->Render(*(this->window));
 	}
 	this->window->display();
 }
 
 void Game::initWindow()
 {
-	this->window = new sf::RenderWindow(sf::VideoMode(1080, 720), "Draw Circles", sf::Style::Close | sf::Style::Titlebar);
+	this->window = new sf::RenderWindow(sf::VideoMode(SCREENW, SCREENH), "Draw Circles", sf::Style::Close | sf::Style::Titlebar);
 	this->window->setFramerateLimit(FRAMERATE);
 	this->window->setVerticalSyncEnabled(false);
 }
 
 void Game::initIsland()
 {
-	this->islands = new Island *[ILNUMLEVEL1];
-	this->islands[0] = new Island(sf::Vector2f((float)(17 * SCREENW / 43), (float)(SCREENH / 14)), 1, CONTROLOFPLAYER);
-	this->islands[1] = new Island(sf::Vector2f((float)(77 * SCREENW / 87), (float)(SCREENH / 16)), 2, NEUTRAL);
-	this->islands[2] = new Island(sf::Vector2f((float)(SCREENW / 12), (float)(SCREENH / 3)), 3, NEUTRAL);
-	this->islands[3] = new Island(sf::Vector2f((float)(SCREENW / 5), (float)(SCREENH / 6)), 4, NEUTRAL);
-	this->islands[4] = new Island(sf::Vector2f((float)(4 * SCREENW / 7), (float)(3 * SCREENH / 8)), 5, NEUTRAL);
-	this->islands[5] = new Island(sf::Vector2f((float)(4 * SCREENW / 5), (float)(SCREENH / 2)), 6, CONTROLOFENEMY);
+	readLevel("level1.dat");
 
-	this->ilClicked = (int*)realloc(ilClicked, ILNUMLEVEL1 * sizeof(int)); //this better not cause any memory problems later on
+	//this->curLevel.size = 7;
+	//this->curLevel.islands = new Island *[this->curLevel.size];
+	//this->curLevel.islands[0] = new Island(sf::Vector2f(0.05f, 0.3f), 20, CONTROLOFPLAYER);
+	//this->curLevel.islands[1] = new Island(sf::Vector2f(0.25f, 0.1f), 0, NEUTRAL);
+	//this->curLevel.islands[2] = new Island(sf::Vector2f(0.25f, 0.5f), 0, NEUTRAL);
+	//this->curLevel.islands[3] = new Island(sf::Vector2f(0.45f, 0.3f), 30, NEUTRAL);
+	//this->curLevel.islands[4] = new Island(sf::Vector2f(0.65f, 0.1f), 0, NEUTRAL);
+	//this->curLevel.islands[5] = new Island(sf::Vector2f(0.65f, 0.5f), 0, NEUTRAL);
+	//this->curLevel.islands[6] = new Island(sf::Vector2f(0.85f, 0.3f), 20, CONTROLOFENEMY);
 
-	// Initialize lines matrix
-	this->bridgesCoordinates = (int**)calloc(ILNUMLEVEL1 , sizeof(int*));
-	for (size_t i = 0; i < ILNUMLEVEL1; i++)
-	{
-		this->bridgesCoordinates[i] = (int*)calloc(ILNUMLEVEL1, sizeof(int));
-		ilClicked[i] = 0;
-	}
-	
-	// Initialize line positions
-	bridgesCoordinates[0][1] = 10;
-	bridgesCoordinates[1][4] = 7;
-	bridgesCoordinates[2][3] = 3;
-	bridgesCoordinates[2][4] = 5;
-	bridgesCoordinates[3][4] = 12;
-	bridgesCoordinates[4][5] = 2;
+	//this->ilClicked = (int*)realloc(ilClicked, this->curLevel.size * sizeof(int)); //this better not cause any memory problems later on
+
+	// //Initialize lines matrix
+	//this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size , sizeof(int*));
+	//for (size_t i = 0; i < this->curLevel.size; i++)
+	//{
+	//	this->curLevel.bridgesCoordinates[i] = (int*)calloc(this->curLevel.size, sizeof(int));
+	//	ilClicked[i] = 0;
+	//}
+	//
+	// //Initialize line positions
+	//this->curLevel.bridgesCoordinates[0][1] = 6;
+	//this->curLevel.bridgesCoordinates[0][2] = 6;
+	//this->curLevel.bridgesCoordinates[1][3] = 3;
+	//this->curLevel.bridgesCoordinates[2][3] = 3;
+	//this->curLevel.bridgesCoordinates[3][4] = 3;
+	//this->curLevel.bridgesCoordinates[3][5] = 3;
+	//this->curLevel.bridgesCoordinates[4][6] = 6;
+	//this->curLevel.bridgesCoordinates[5][6] = 6;
+
+
+
+
+	/*writeLevel("level2.dat");
+	readLevel("level2.dat");*/
 
 	// Print matrix values
 	/*for (int i = 0; i < ILNUMLEVEL1; i++)
@@ -371,19 +421,32 @@ void Game::initIsland()
 		printf("\n");
 	}*/
 
-	// Create bridges
-	for (int i = 0; i < ILNUMLEVEL1; i++)
+	//Set positions to screen size
+	for (int i = 0; i < this->curLevel.size; i++)
 	{
-		for (int j = i + 1; j < ILNUMLEVEL1; j++)
+		this->curLevel.islands[i]->SetPosRelativeToScreen(SCREENW, SCREENH);
+	}
+
+	// Create bridges
+	for (int i = 0; i < this->curLevel.size; i++)
+	{
+		for (int j = i + 1; j < this->curLevel.size; j++)
 		{
 			//BridgesCoordinates[i][j] = j + 1;
-			if (bridgesCoordinates[i][j] > 0)
+			if (this->curLevel.bridgesCoordinates[i][j] > 0)
 			{
 
-				CreateBridge(i, j, bridgesCoordinates[i][j]);
+				CreateBridge(i, j, this->curLevel.bridgesCoordinates[i][j]);
 			}
 		}
 	}
+
+
+}
+
+void Game::initAiEnemy()
+{
+	this->ai = new AiEnemy(curLevel);
 }
 
 void Game::initShader()

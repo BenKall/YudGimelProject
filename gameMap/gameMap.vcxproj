@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AiEnemy.cpp" />
     <ClCompile Include="Ant.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Bridge.cpp" />
@@ -138,12 +139,14 @@
     <ClCompile Include="UsefulFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AiEnemy.h" />
     <ClInclude Include="Ant.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Bridge.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Island.h" />
+    <ClInclude Include="CustomStructs.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="UsefulFunctions.h" />
   </ItemGroup>

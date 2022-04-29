@@ -1,6 +1,6 @@
 #include "Bridge.h"
 
-Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight)
+Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight, int screenWidth, int screenHeight)
 {
 	float brLentgh = UsefulFunctions::CalculateLength(startPos, endPos);
 	float brAngle = UsefulFunctions::CalculateAngle(startPos, endPos);
@@ -11,7 +11,7 @@ Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight)
 	sf::RectangleShape tmpRectangle;
 	tmpRectangle.setFillColor(sf::Color::Black);
 	tmpRectangle.setPosition(startPos);
-	tmpRectangle.setSize(sf::Vector2f(brLentgh, 10.f));
+	tmpRectangle.setSize(sf::Vector2f(brLentgh, (screenWidth + screenHeight) / 2 / 100));
 	tmpRectangle.setRotation(brAngle);
 
 	this->brShape = tmpRectangle;
@@ -21,25 +21,27 @@ Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight)
 
 	//Set text
 	this->brText.setFont(brFont);
-	this->brText.setCharacterSize(24);
+	this->brText.setCharacterSize(this->brShape.getSize().y * 4);
+
 	this->brText.setFillColor(sf::Color::Black);
 	this->brText.setOutlineColor(sf::Color::White);
-	this->brText.setOutlineThickness(3.0f);
+	this->brText.setOutlineThickness(this->brText.getCharacterSize() / 16);
 	std::string textString = std::to_string(this->brWeight);
 	this->brText.setString(textString);
 	sf::Vector2f brVector = UsefulFunctions::GetDirection(startPos, endPos);
 	this->brText.setPosition(brShape.getPosition().x + brVector.x / 2, brShape.getPosition().y + brVector.y / 2);
+	this->brText.setOrigin(brText.getLocalBounds().width / 2, (brText.getLocalBounds().height / 2) + brText.getCharacterSize() / 2);
 
 	// move text next to bridge, by moving  it 
 	// left or down, depending on the angle
 	// so the text won't end up on the actual bridge
 	if (brQuarterAngle > 45)
 	{
-		this->brText.move(10.f, 0);
+		this->brText.move(brText.getCharacterSize(), 0);
 	}
 	else
 	{
-		this->brText.move(0, 20.f);
+		this->brText.move(0, brText.getCharacterSize());
 	}
 	//this->brText.setPosition(brShape.getPosition().x + brShape.getGlobalBounds().width / 2, brShape.getPosition().y + brShape.getGlobalBounds().height / 2);
 	//this->brText.setPosition(brShape.getPosition().x + abs(brVector.x) / 2, brShape.getPosition().y + abs(brVector.y) / 2);
@@ -50,6 +52,15 @@ Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight)
 
 Bridge::~Bridge()
 {
+}
+
+void Bridge::SetSizeRelativeToScreen(int screenWidth, int screenHeight)
+{
+	this->brShape.setSize(sf::Vector2f(this->brShape.getSize().x, (screenWidth + screenHeight) / 2 / 100));
+
+	this->brText.setCharacterSize(this->brShape.getSize().y * 4);
+	this->brText.setOutlineThickness(this->brText.getCharacterSize() / 16);
+
 }
 
 const sf::FloatRect Bridge::GetBounds() const

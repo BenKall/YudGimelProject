@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 
 #include <iostream>
+#include <fstream>
 #include <SFML\Graphics.hpp>
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
@@ -12,6 +13,8 @@
 #include "Island.h"
 #include "Ant.h"
 #include "Bridge.h"
+#include "CustomStructs.h"
+#include "AiEnemy.h"
 
 class Game
 {
@@ -19,13 +22,9 @@ public:
 	Game();
 	virtual ~Game();
 
-
 	//functions
 	void run();
 
-	//Calculation functions
-	float CalculateLength(sf::Vector2f ilPos1, sf::Vector2f ilPos2);
-	float CalculateAngle(sf::Vector2f ilPos1, sf::Vector2f ilPos2);
 	//Check is line exists
 	bool IsLineExist(int i, int j);
 
@@ -41,6 +40,10 @@ public:
 	void UpdateIslands();
 	void UpdateAnts();
 	
+	//File functions
+	void writeLevel(std::string fileName);
+	void readLevel(std::string fileName);
+
 	//Create lines
 	void CreateBridge(int i, int j, int weight);
 
@@ -61,20 +64,19 @@ private:
 
 	//Time
 	sf::Time elapsedTime;
-	sf::Time deltaTime;
-	sf::Clock r;
+	sf::Time deltaTime = sf::milliseconds(500);
+	sf::Clock clock;
 
-	//Island
-	Island** islands;
+	//Island interface
 	int* ilClicked = (int*)malloc(sizeof(int)); //watch out this won't become a memory problem
 
 	//Islands clicked
-	int ilFirstClckd;
-	int ilSecondClckd;
-
-	//Bridges locations
-	int** bridgesCoordinates;
+	int ilFirstClckd = -1;
+	int ilSecondClckd = -1;
 	
+	//Level
+	Level curLevel;
+
 	//Bridges
 	std::vector<Bridge*> bridges;
 
@@ -99,10 +101,13 @@ private:
 	sf::Font font;
 	sf::Text textTemplate;
 
+	//Ai
+	AiEnemy *ai;
 
 	//private functions
 	void initWindow();
 	void initIsland();
+	void initAiEnemy();
 	void initShader();
 	void initBackground();
 	//void initWall();

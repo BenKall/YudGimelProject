@@ -11,8 +11,10 @@ class Bridge
 {
 
 public:
-	Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight);
+	Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight, int screenWidth, int screenHeight);
 	virtual ~Bridge();
+
+	void SetSizeRelativeToScreen(int screenWidth, int screenHeight);
 
 	//Accessor
 	const sf::FloatRect GetBounds() const;
