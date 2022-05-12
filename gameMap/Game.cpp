@@ -230,7 +230,7 @@ void Game::UpdateIslands()
 	}
 
 	//Ai
-	std::vector<AntBuildParameters> aiDecision = ai->Think(curLevel, *AiEnemy::AiAgressive);
+	std::vector<AntBuildParameters> aiDecision = ai->Think(curLevel);
 
 	for (auto i : aiDecision)
 	{
@@ -266,16 +266,16 @@ void Game::writeLevel(std::string fileName)
 	if (levelFile.is_open())
 	{
 		levelFile.write((char *)&this->curLevel.size, sizeof(int));
-		for (size_t i = 0; i < this->curLevel.size; i++)
+		for (int i = 0; i < this->curLevel.size; i++)
 		{
 			levelFile.write((char *)&this->curLevel.islands[i]->GetPos(), sizeof(sf::Vector2f));
 			levelFile.write((char *)&this->curLevel.islands[i]->GetAntsContained(), sizeof(int));
 			levelFile.write((char *)&this->curLevel.islands[i]->GetStatus(), sizeof(ISLANDSTATUS));
 		}
 
-		for (size_t i = 0; i < this->curLevel.size; i++)
+		for (int i = 0; i < this->curLevel.size; i++)
 		{
-			for (size_t j = 0; j < this->curLevel.size; j++)
+			for (int j = 0; j < this->curLevel.size; j++)
 			{
 				levelFile.write((char *)&this->curLevel.bridgesCoordinates[i][j], sizeof(int));
 			}
@@ -298,7 +298,7 @@ void Game::readLevel(std::string fileName)
 	{
 		levelFileRead.read((char *)&this->curLevel.size, sizeof(int));
 		this->curLevel.islands = new Island *[this->curLevel.size];
-		for (size_t i = 0; i < this->curLevel.size; i++)
+		for (int i = 0; i < this->curLevel.size; i++)
 		{
 			sf::Vector2f tmpVc2f;
 			int tmpN;
@@ -310,14 +310,14 @@ void Game::readLevel(std::string fileName)
 		}
 
 		this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size, sizeof(int*));
-		for (size_t i = 0; i < this->curLevel.size; i++)
+		for (int i = 0; i < this->curLevel.size; i++)
 		{
 			this->curLevel.bridgesCoordinates[i] = (int*)calloc(this->curLevel.size, sizeof(int));
 		}
 
-		for (size_t i = 0; i < this->curLevel.size; i++)
+		for (int i = 0; i < this->curLevel.size; i++)
 		{
-			for (size_t j = 0; j < this->curLevel.size; j++)
+			for (int j = 0; j < this->curLevel.size; j++)
 			{
 				levelFileRead.read((char *)&this->curLevel.bridgesCoordinates[i][j], sizeof(int));
 			}
@@ -385,11 +385,11 @@ void Game::initIsland()
 	//this->curLevel.islands[5] = new Island(sf::Vector2f(0.65f, 0.5f), 0, NEUTRAL);
 	//this->curLevel.islands[6] = new Island(sf::Vector2f(0.85f, 0.3f), 20, CONTROLOFENEMY);
 
-	//this->ilClicked = (int*)realloc(ilClicked, this->curLevel.size * sizeof(int)); //this better not cause any memory problems later on
+	this->ilClicked = (int*)realloc(ilClicked, this->curLevel.size * sizeof(int)); //this better not cause any memory problems later on
 
 	// //Initialize lines matrix
 	//this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size , sizeof(int*));
-	//for (size_t i = 0; i < this->curLevel.size; i++)
+	//for (int i = 0; i < this->curLevel.size; i++)
 	//{
 	//	this->curLevel.bridgesCoordinates[i] = (int*)calloc(this->curLevel.size, sizeof(int));
 	//	ilClicked[i] = 0;
@@ -446,7 +446,7 @@ void Game::initIsland()
 
 void Game::initAiEnemy()
 {
-	this->ai = new AiEnemy(curLevel);
+	this->ai = new AiDijkstra(curLevel);
 }
 
 void Game::initShader()

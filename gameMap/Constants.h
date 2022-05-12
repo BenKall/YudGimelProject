@@ -3,6 +3,7 @@
 #define SCREENW 1080
 #define SCREENH 720
 #define FRAMERATE 60
+#define INF 999
 
 #define PLAYERCOLOR sf::Color(0.f, 80.f, 255.f) //, 15.f)
 #define ENEMYCOLOR sf::Color(255.f, 20.f, 0.f)

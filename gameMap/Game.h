@@ -9,12 +9,15 @@
 #include <SFML\Window.hpp>
 #include <time.h>
 #include <math.h>
+//#include <vector> //remove?
 #include "constants.h"
 #include "Island.h"
 #include "Ant.h"
 #include "Bridge.h"
 #include "CustomStructs.h"
 #include "AiEnemy.h"
+#include "AiDijkstra.h"
+#include "AiAgressive.h"
 
 class Game
 {
@@ -68,7 +71,7 @@ private:
 	sf::Clock clock;
 
 	//Island interface
-	int* ilClicked = (int*)malloc(sizeof(int)); //watch out this won't become a memory problem
+	int* ilClicked; // = (int*)malloc(sizeof(int)); //watch out this won't become a memory problem
 
 	//Islands clicked
 	int ilFirstClckd = -1;
