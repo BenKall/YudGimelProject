@@ -8,16 +8,28 @@ int main()
 {
 	AssetManager manager;
 
-	/*Game game;
+	//Game game;
 
-	game.run();*/
+	//game.run();
 
 	sf::RenderWindow* window;
-	window = new sf::RenderWindow(sf::VideoMode(SCREENW, SCREENH), "Draw Circles", sf::Style::Close | sf::Style::Titlebar);
+	window = new sf::RenderWindow(sf::VideoMode(SCREENW, SCREENH), "Ant Wars", sf::Style::Close | sf::Style::Titlebar);
 	window->setFramerateLimit(FRAMERATE);
 	window->setVerticalSyncEnabled(false);
 
-	ScMenu screen(window);
-	screen.Start();
+	SCREENTYPE curScreen = MENU;
+	ScMenu* scMenu = new ScMenu(window, curScreen);
+	ScCredits* scCredits = new ScCredits(window, curScreen);
+	std::vector<Screen*> allScreens;
+	allScreens.push_back(scMenu);
+	allScreens.push_back(scCredits);
+	while (curScreen != EXIT)//(window->isOpen())
+	{
+		allScreens.at(curScreen)->Run();
+	}
+	for (auto sc : allScreens)
+	{
+		delete sc;
+	}
 	return 0;
 }

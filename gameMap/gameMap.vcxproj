@@ -135,13 +135,13 @@
     <ClCompile Include="Ant.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Bridge.cpp" />
-    <ClCompile Include="BtnMenu.cpp" />
+    <ClCompile Include="BtnOnlyText.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CustomStructs.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Island.cpp" />
+    <ClCompile Include="ScCredits.cpp" />
     <ClCompile Include="ScMenu.cpp" />
-    <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="UsefulFunctions.cpp" />
   </ItemGroup>
@@ -152,13 +152,14 @@
     <ClInclude Include="Ant.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Bridge.h" />
-    <ClInclude Include="BtnMenu.h" />
+    <ClInclude Include="BtnOnlyText.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Island.h" />
     <ClInclude Include="CustomStructs.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ScCredits.h" />
     <ClInclude Include="ScMenu.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="UsefulFunctions.h" />

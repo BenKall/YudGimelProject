@@ -446,7 +446,8 @@ void Game::initIsland()
 
 void Game::initAiEnemy()
 {
-	this->ai = new AiDijkstra(curLevel);
+	this->ai = new AiAgressive(curLevel);
+	//this->ai = new AiDijkstra(curLevel);
 }
 
 void Game::initShader()

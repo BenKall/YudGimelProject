@@ -5,6 +5,7 @@
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
 #include <string>
+#include "Screen.h"
 #include "constants.h"
 #include "AssetManager.h"
 
@@ -13,20 +14,28 @@ class Button
 public:
 	Button() {};
 
+	const sf::Text GetText() const {
+		return this->btnText;
+	};
+
+	const sf::RectangleShape GetShape() const {
+		return this->btnShape;
+	};
+
+	//Modifiers
+	virtual bool CheckMouse(sf::Vector2f* mousePosView) = 0;
+
 	void Render(sf::RenderTarget & target)
 	{
 		target.draw(this->btnShape);
 		target.draw(this->btnText);
-
-		printf("%s \n", btnText.getString());
-		printf("%f \n", btnText.getOutlineThickness());
-		printf("%f \n", btnShape.getSize().x);
 	}
 
 protected:
 	sf::RectangleShape btnShape;
 	sf::Text btnText;
-
+	Screen* btnCurScreen;
+	Screen* btnToScreen;
 	//float btnWidthScale = 0.3f;
 	//float btnHeightScale = 0.1f;
 	//float btnOutlineThicknessScale;
