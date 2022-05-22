@@ -13,7 +13,7 @@ ScMenu::ScMenu(sf::RenderWindow * window, SCREENTYPE& curScreen) : Screen(window
 	//this->curScreen = EXIT;
 
 	BtnOnlyText* btn;
-	btn = new BtnOnlyText(0.5f, 0.4f, window->getSize().x, window->getSize().y, "Play", curScreen, CREDITS);
+	btn = new BtnOnlyText(0.5f, 0.4f, window->getSize().x, window->getSize().y, "Play", curScreen, GAMESELECT);
 	this->buttons.push_back(btn);
 	btn = new BtnOnlyText(0.5f, 0.5f, window->getSize().x, window->getSize().y, "Credits", curScreen, CREDITS);
 	this->buttons.push_back(btn);
@@ -23,7 +23,6 @@ ScMenu::ScMenu(sf::RenderWindow * window, SCREENTYPE& curScreen) : Screen(window
 
 ScMenu::~ScMenu()
 {
-	delete tmp;
 	for (auto *btn : this->buttons)
 	{
 		delete btn;

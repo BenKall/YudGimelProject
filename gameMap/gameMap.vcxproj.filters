@@ -60,6 +60,12 @@
     <ClCompile Include="ScCredits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScLevelSelect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BtnClick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h">
@@ -111,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ScCredits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScLevelSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BtnClick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

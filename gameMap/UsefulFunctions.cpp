@@ -1,29 +1,13 @@
 #include "UsefulFunctions.h"
 
-//-----------------------------------------------------------------
-//                      Calculate Length
-//                      ----------------
-// 
-// Calculates the length between the previous position of the mouse
-// and its current position.
-//-----------------------------------------------------------------
+// Calculates the length between 2 points
 float UsefulFunctions::CalculateLength(sf::Vector2f ilPos1, sf::Vector2f ilPos2)
 {
 	return sqrt((ilPos1.x - ilPos2.x) * (ilPos1.x - ilPos2.x) +
 		(ilPos1.y - ilPos2.y) * (ilPos1.y - ilPos2.y));
 }
 
-//-----------------------------------------------------------------
-//                        Calculate Angle
-//                        ----------------
-// 
-// Calculates the angle between the previous position of the mouse
-// and its current position.
-// Doing so by calculating the inverse tangent of the adjacent and
-// opposite sides of a triangle created with the two points.
-// Then checks the direction of the drawn line in order to rotate
-// the drawn rectangle correctly. 
-//-----------------------------------------------------------------
+// Calculates the angle between 2 poits 
 float UsefulFunctions::CalculateAngle(sf::Vector2f ilPos1, sf::Vector2f ilPos2)
 {
 

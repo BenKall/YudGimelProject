@@ -16,7 +16,7 @@ public:
 		float movementSpeed, int antsContained,
 		ISLANDSTATUS status,
 		int screenWidth, int screenHeight);
-	virtual ~Ant();
+	/*virtual ~Ant();*/
 
 	//Accessor
 	const sf::FloatRect GetBounds() const;
@@ -32,14 +32,14 @@ public:
 
 private:
 
-	sf::Sprite antSprite;
-	sf::Vector2f direction;
-	sf::Vector2f despawnPoint;
+	sf::Sprite* antSprite = new sf::Sprite();
+	sf::Vector2f* direction = new sf::Vector2f();
+	sf::Vector2f* despawnPoint = new sf::Vector2f();
 	float movementSpeed;
 	int antAmount;
-	sf::Text antText;
-	sf::Font antFont;
-	ISLANDSTATUS status;
+	sf::Text* antText = new sf::Text();
+	sf::Font* antFont = new sf::Font();
+	ISLANDSTATUS* status = new ISLANDSTATUS();
 	int spawnCoordinate;
 	int despawnCoordinate;
 };

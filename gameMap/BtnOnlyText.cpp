@@ -16,8 +16,8 @@ BtnOnlyText::BtnOnlyText(float posX, float posY, int screenWidth, int screenHeig
 		posY * screenHeight
 	);
 
-	this->btnShape.setSize(sf::Vector2f(*this->btnWidthScale * screenWidth, *this->btnHeightScale * screenHeight));
-	this->btnShape.setFillColor(*this->btnFillColor);
+	this->btnShape.setSize(sf::Vector2f(*this->widthScale * screenWidth, *this->heightScale * screenHeight));
+	this->btnShape.setFillColor(*this->fillColor);
 
 	this->btnShape.setOrigin(
 		this->btnShape.getLocalBounds().width / 2,
@@ -32,11 +32,11 @@ BtnOnlyText::BtnOnlyText(float posX, float posY, int screenWidth, int screenHeig
 	);
 
 	this->btnText.setString(btnString);
-	this->btnText.setCharacterSize(*this->btnTextScale * screenHeight);
-	this->btnText.setFont(*this->btnFont);
-	this->btnText.setOutlineThickness(*this->btnTextOutlineScale * screenHeight);
-	this->btnText.setOutlineColor(*this->btnTextOutlineColor);
-	this->btnText.setFillColor(*this->btnTextColor);
+	this->btnText.setCharacterSize(*this->textScale * screenHeight);
+	this->btnText.setFont(*this->font);
+	this->btnText.setOutlineThickness(*this->textOutlineScale * screenHeight);
+	this->btnText.setOutlineColor(*this->textOutlineColor);
+	this->btnText.setFillColor(*this->textColor);
 
 	this->btnText.setOrigin(
 		this->btnText.getLocalBounds().width / 2,
@@ -46,15 +46,15 @@ BtnOnlyText::BtnOnlyText(float posX, float posY, int screenWidth, int screenHeig
 
 BtnOnlyText::~BtnOnlyText()
 {
-	delete this->btnWidthScale;
-	delete this->btnHeightScale;
-	delete this->btnTextScale;
-	delete this->btnTextColor;
-	delete this->btnTextHoverColor;
-	delete this->btnFont;
-	delete this->btnTextOutlineScale;
-	delete this->btnTextOutlineColor;
-	delete this->btnFillColor;
+	delete this->widthScale;
+	delete this->heightScale;
+	delete this->textScale;
+	delete this->textColor;
+	delete this->textHoverColor;
+	delete this->font;
+	delete this->textOutlineScale;
+	delete this->textOutlineColor;
+	delete this->fillColor;
 }
 
 bool BtnOnlyText::CheckMouse(sf::Vector2f* mousePosView)
@@ -62,17 +62,18 @@ bool BtnOnlyText::CheckMouse(sf::Vector2f* mousePosView)
 	return OnMouseHover(mousePosView);
 }
 
+//If mouse is on the button the color changes
 bool BtnOnlyText::OnMouseHover(sf::Vector2f* mousePosView)
 {
 	bool flag = false;
 	if (this->btnText.getGlobalBounds().contains(*mousePosView))
 	{
-		this->btnText.setFillColor(*btnTextHoverColor);
+		this->btnText.setFillColor(*textHoverColor);
 		if(OnMouseClick())
 			flag = true;
 	}
 	else
-		this->btnText.setFillColor(*btnTextColor);
+		this->btnText.setFillColor(*textColor);
 	return flag;
 }
 
@@ -81,13 +82,7 @@ bool BtnOnlyText::OnMouseClick()
 	if (isMouseClicked())
 	{
 		*this->curScreen = toScreen;
-		//if (btnCurScreen == btnToScreen)
-		//{
-		//	return true;
-		//	//delete btnCurScreen;
-		//}
-		//else
-		//this->btnToScreen->Run();
+		return true;
 	}
 	return false;
 }
@@ -95,4 +90,9 @@ bool BtnOnlyText::OnMouseClick()
 bool BtnOnlyText::isMouseClicked()
 {
 	return sf::Mouse::isButtonPressed(sf::Mouse::Left);
+}
+
+SCREENTYPE BtnOnlyText::getToScreen()
+{
+	return this->toScreen;
 }

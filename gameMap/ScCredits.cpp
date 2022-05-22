@@ -35,18 +35,18 @@ void ScCredits::UpdateElements()
 {
 	for (auto *btn : this->buttons)
 	{
-		if (btn->CheckMouse(this->mousePosView) && btn->GetText().getString() == "Close")
-		{
-			//delete this;
-			exit(1);
-			//this->window->close();
-		}
+		/*if (*/ btn->CheckMouse(this->mousePosView); /*&& btn->GetText().getString() == "Close")*/
+		//{
+		//	//delete this;
+		//	exit(1);
+		//	//this->window->close();
+		//}
 
-		//std::cout << typeid(btn).name() << std::endl;
-		/*if (typeid(btn).name() == "BtnOnlyText")
-		{
+		////std::cout << typeid(btn).name() << std::endl;
+		///*if (typeid(btn).name() == "BtnOnlyText")
+		//{
 
-		}*/
+		//}*/
 	}
 }
 

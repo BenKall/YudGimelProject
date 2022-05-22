@@ -7,7 +7,6 @@
 #include <string>
 #include <typeinfo>
 #include "Screen.h"
-#include "ScCredits.h"
 #include "BtnOnlyText.h"
 class ScMenu :
 	public Screen
@@ -19,7 +18,6 @@ public:
 	void Render();
 private:
 	SCREENTYPE& curScreen = *new SCREENTYPE(MENU);
-	Screen* tmp = new ScCredits(window, curScreen);
 	std::vector<Button*> buttons;
 };
 

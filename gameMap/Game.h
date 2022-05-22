@@ -9,7 +9,8 @@
 #include <SFML\Window.hpp>
 #include <time.h>
 #include <math.h>
-//#include <vector> //remove?
+#include <vector> //remove?
+#include "Screen.h"
 #include "constants.h"
 #include "Island.h"
 #include "Ant.h"
@@ -19,23 +20,24 @@
 #include "AiDijkstra.h"
 #include "AiAgressive.h"
 
-class Game
+class Game :
+	public Screen
 {
 public:
-	Game();
+	Game(sf::RenderWindow* window, SCREENTYPE& curScreen, int levelNum , int aiNum);
 	virtual ~Game();
 
 	//functions
-	void run();
+	//void run();
 
 	//Check is line exists
 	bool IsLineExist(int i, int j);
 
 	//Update functions
-	void UpdatePollEvents();
-	void UpdateInput();
+	//void UpdatePollEvents();
+	//void UpdateInput();
 	//void updateKeyboardInput();
-	void UpdateMouse();
+	//void UpdateMouse();
 	void updateMouseInteraction();
 	void updateMousePositions();
 	//void updateMousePosGrid();
@@ -54,12 +56,12 @@ public:
 	void CreateAnt(int i, int j, int weight);
 
 	//
-	void Update();
+	void UpdateElements();
 	void Render();
 
 private:
 	//Window
-	sf::RenderWindow* window;
+	//sf::RenderWindow* window;
 
 	//Shader
 	sf::Shader* backShader; 
@@ -87,11 +89,11 @@ private:
 	std::vector<Ant*> ants;
 
 	//MouseTracker
-	sf::Vector2f mousePosGrid;
+	//sf::Vector2f mousePosGrid;
 
 	//Mouse positions
-	sf::Vector2i mousePos;
-	sf::Vector2f mousePosView;
+	//sf::Vector2i mousePos;
+	//sf::Vector2f mousePosView;
 	bool mousePressed = false;
 
 	//NextPos
@@ -108,7 +110,7 @@ private:
 	AiEnemy *ai;
 
 	//private functions
-	void initWindow();
+	void initWindow(sf::RenderWindow* window);
 	void initIsland();
 	void initAiEnemy();
 	void initShader();

@@ -2,7 +2,7 @@
 
 Island::Island(sf::Vector2f pos, int antsContained, ISLANDSTATUS status)
 {
-	this->ilShape.setRadius(80.f);
+	this->ilShape.setRadius(40.f);
 	this->ilShape.setOutlineColor(DEFAULTCOLOR);
 	this->ilShape.setOutlineThickness(4.f);
 	this->ilTexture = AssetManager::GetTexture("Assets/Textures/dirt_circle1.png");//.loadFromFile("Assets/Textures/dirt_circle1.png"); //
@@ -41,6 +41,7 @@ void Island::DivideAntsContained()
 	SetText(this->antsContained);
 }
 
+// add or sub amount of ants depending on ant type inside and incoming
 void Island::ChangeAntsContained(int amount, ISLANDSTATUS status)
 {
 	if (this->status == status)
@@ -71,9 +72,10 @@ void Island::SetText(int newNumber)
 	this->ilText.setOrigin(ilText.getLocalBounds().width / 2, (ilText.getLocalBounds().height / 2) + ilText.getCharacterSize() / 2);
 }
 
+//Set the position and size of the island to the size of the screen
 void Island::SetPosRelativeToScreen(int screenWidth, int screenHeight)
 {
-	this->ilShape.setRadius((screenWidth + screenHeight) / 2 / 14);
+	this->ilShape.setRadius((screenWidth + screenHeight) / 2 / 20);
 	this->ilShape.setOutlineThickness(this->ilShape.getRadius() / 16);
 	this->ilShape.setPosition(
 		this->ilShape.getPosition().x * screenWidth,
@@ -97,6 +99,7 @@ void Island::SetOutlineColor(const sf::Color color)
 	this->ilShape.setOutlineColor(color);
 }
 
+//Set the color of the island according to their status
 void Island::SetStatusColors(ISLANDSTATUS status)
 {
 	//Set shape outline

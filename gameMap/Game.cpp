@@ -1,8 +1,8 @@
 #include "Game.h"
 
-Game::Game()
+Game::Game(sf::RenderWindow* window, SCREENTYPE& curScreen, int levelNum, int aiNum) : Screen(window, curScreen)
 {
-	initWindow();
+	initWindow(window);
 	initShader();
 	initBackground();
 	initIsland();
@@ -31,38 +31,38 @@ Game::~Game()
 	}
 }
 
-void Game::run()
-{
-	while (this->window->isOpen())
-	{
-		this->UpdatePollEvents();
-		this->Update();
-		this->Render();
-	}
-}
+//void Game::run()
+//{
+//	while (this->window->isOpen())
+//	{
+//		this->UpdatePollEvents();
+//		this->Update();
+//		this->Render();
+//	}
+//}
 
-void Game::UpdatePollEvents()
-{
-	sf::Event e;
-	while (this->window->pollEvent(e))
-	{
-		if (e.Event::type == sf::Event::Closed)
-		{
-			this->window->close();
-		}
-	}
-}
+//void Game::UpdatePollEvents()
+//{
+//	sf::Event e;
+//	while (this->window->pollEvent(e))
+//	{
+//		if (e.Event::type == sf::Event::Closed)
+//		{
+//			this->window->close();
+//		}
+//	}
+//}
 
-void Game::UpdateInput()
-{
-	UpdateMouse();
-}
+//void Game::UpdateInput()
+//{
+//	UpdateMouse();
+//}
 
-void Game::UpdateMouse()
-{
-	mousePos = sf::Mouse::getPosition(*this->window);
-	mousePosView = this->window->mapPixelToCoords(this->mousePos);
-}
+//void Game::UpdateMouse()
+//{
+//	mousePos = sf::Mouse::getPosition(*this->window);
+//	mousePosView = this->window->mapPixelToCoords(this->mousePos);
+//}
 
 bool Game::IsLineExist(int i, int j)
 {
@@ -137,7 +137,7 @@ void Game::UpdateIslands()
 
 		sf::Color curColor = this->curLevel.islands[i]->GetOutlineColor();
 		//if mouse is hovering over the shape
-		if (this->curLevel.islands[i]->GetBounds().contains(this->mousePosView))
+		if (this->curLevel.islands[i]->GetBounds().contains(*this->mousePosView))
 		{
 			this->flagShader = 1;
 			backShader->setUniform("light", 
@@ -249,8 +249,9 @@ void Game::UpdateAnts()
 		{
 			this->curLevel.islands[ant->GetDespawnCoordinate()]->ChangeAntsContained(ant->GetAntAmount(), ant->GetStatus());
 			//Delete ant
-			delete this->ants.at(counter);
+			//delete this->ants.at(counter);
 			this->ants.erase(this->ants.begin() + counter);
+			counter--;
 		}
 
 		counter++;
@@ -329,9 +330,9 @@ void Game::readLevel(std::string fileName)
 	}
 }
 
-void Game::Update()
+void Game::UpdateElements()
 {
-	UpdateInput();
+	//UpdateInput();
 	UpdateIslands();
 	UpdateAnts();
 }
@@ -342,7 +343,7 @@ void Game::Render()
 	if (flagShader)
 	{
 		backShader->setUniform("hasTexture", true);
-		backShader->setUniform("texture", AssetManager::GetTexture("Assets/Textures/brazil.png"));
+		backShader->setUniform("texture", AssetManager::GetTexture("Assets/Textures/antgameBackground.png"));
 		this->window->draw(backgroundSprite, backShader);
 	}
 	else
@@ -364,9 +365,9 @@ void Game::Render()
 	this->window->display();
 }
 
-void Game::initWindow()
+void Game::initWindow(sf::RenderWindow* window)
 {
-	this->window = new sf::RenderWindow(sf::VideoMode(SCREENW, SCREENH), "Draw Circles", sf::Style::Close | sf::Style::Titlebar);
+	this->window = window;
 	this->window->setFramerateLimit(FRAMERATE);
 	this->window->setVerticalSyncEnabled(false);
 }
@@ -458,5 +459,9 @@ void Game::initShader()
 
 void Game::initBackground()
 {
-	this->backgroundSprite = sf::Sprite(AssetManager::GetTexture("Assets/Textures/brazil.png"));
+	this->backgroundSprite = sf::Sprite(AssetManager::GetTexture("Assets/Textures/antgameBackground.png"));
+	this->backgroundSprite.setScale(
+		window->getSize().x / this->backgroundSprite.getGlobalBounds().width,
+		window->getSize().y / this->backgroundSprite.getGlobalBounds().height
+	);
 }
