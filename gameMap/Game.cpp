@@ -2,6 +2,8 @@
 
 Game::Game(sf::RenderWindow* window, SCREENTYPE& curScreen, int levelNum, int aiNum) : Screen(window, curScreen)
 {
+	this->backButton = new BtnOnlyText(0.05f, 0.06f, window->getSize().x, window->getSize().y, "Back", curScreen, GAMESELECT);
+	initChosenLevelAndAi(levelNum, aiNum);
 	initWindow(window);
 	initShader();
 	initBackground();
@@ -332,7 +334,7 @@ void Game::readLevel(std::string fileName)
 
 void Game::UpdateElements()
 {
-	//UpdateInput();
+	this->backButton->CheckMouse(this->mousePosView);
 	UpdateIslands();
 	UpdateAnts();
 }
@@ -362,7 +364,45 @@ void Game::Render()
 	{
 		this->curLevel.islands[i]->Render(*(this->window));
 	}
+	this->backButton->Render(*(this->window));
 	this->window->display();
+}
+
+void Game::initChosenLevelAndAi(int levelNum, int aiNum)
+{
+	this->levelString = "level1.dat";
+	switch (levelNum)
+	{
+	case 1:
+		this->levelString = "level1.dat";
+		break;
+	case 2:
+		this->levelString = "level2.dat";
+		break;
+	case 3:
+		this->levelString = "level3.dat"; 
+		break;
+	case 4:
+		this->levelString = "level4.dat";
+		break;
+	default:
+		break;
+	}
+
+	readLevel(this->levelString);
+
+	this->ai = new AiAgressive(curLevel);
+	switch (aiNum)
+	{
+	case 1:
+		this->ai = new AiAgressive(curLevel);
+		break;
+	case 2:
+		this->ai = new AiDijkstra(curLevel);
+		break;
+	default:
+		break;
+	}
 }
 
 void Game::initWindow(sf::RenderWindow* window)
@@ -374,7 +414,29 @@ void Game::initWindow(sf::RenderWindow* window)
 
 void Game::initIsland()
 {
-	readLevel("level1.dat");
+	//readLevel("level3.dat");
+
+	/*this->curLevel.size = 19;
+	this->curLevel.islands = new Island *[this->curLevel.size];
+	this->curLevel.islands[0] = new Island(sf::Vector2f(0.05f, 0.1f), 0, CONTROLOFPLAYER);
+	this->curLevel.islands[1] = new Island(sf::Vector2f(0.07f, 0.7f), 1, NEUTRAL);
+	this->curLevel.islands[2] = new Island(sf::Vector2f(0.29f, 0.8f), 2, NEUTRAL);
+	this->curLevel.islands[3] = new Island(sf::Vector2f(0.18f, 0.2f), 3, NEUTRAL);
+	this->curLevel.islands[4] = new Island(sf::Vector2f(0.3f, 0.08f), 4, NEUTRAL);
+	this->curLevel.islands[5] = new Island(sf::Vector2f(0.45f, 0.05f), 5, NEUTRAL);
+	this->curLevel.islands[6] = new Island(sf::Vector2f(0.49f, 0.25f), 6, NEUTRAL);
+	this->curLevel.islands[7] = new Island(sf::Vector2f(0.4f, 0.45f), 7, NEUTRAL);
+	this->curLevel.islands[8] = new Island(sf::Vector2f(0.5f, 0.78f), 8, NEUTRAL);
+	this->curLevel.islands[9] = new Island(sf::Vector2f(0.55f, 0.4f), 9, NEUTRAL);
+	this->curLevel.islands[10] = new Island(sf::Vector2f(0.65f, 0.55f), 10, NEUTRAL);
+	this->curLevel.islands[11] = new Island(sf::Vector2f(0.62f, 0.83f), 11, NEUTRAL);
+	this->curLevel.islands[12] = new Island(sf::Vector2f(0.6f, 0.15f), 12, NEUTRAL);
+	this->curLevel.islands[13] = new Island(sf::Vector2f(0.77f, 0.48f), 13, NEUTRAL);
+	this->curLevel.islands[14] = new Island(sf::Vector2f(0.795f, 0.7f), 14, NEUTRAL);
+	this->curLevel.islands[15] = new Island(sf::Vector2f(0.8f, 0.84f), 15, NEUTRAL);
+	this->curLevel.islands[16] = new Island(sf::Vector2f(0.89f, 0.565f), 16, NEUTRAL);
+	this->curLevel.islands[17] = new Island(sf::Vector2f(0.9f, 0.12f), 17, NEUTRAL);
+	this->curLevel.islands[18] = new Island(sf::Vector2f(0.76f, 0.05f), 18, CONTROLOFENEMY);*/
 
 	//this->curLevel.size = 7;
 	//this->curLevel.islands = new Island *[this->curLevel.size];
@@ -387,6 +449,41 @@ void Game::initIsland()
 	//this->curLevel.islands[6] = new Island(sf::Vector2f(0.85f, 0.3f), 20, CONTROLOFENEMY);
 
 	this->ilClicked = (int*)realloc(ilClicked, this->curLevel.size * sizeof(int)); //this better not cause any memory problems later on
+
+
+	// //Initialize lines matrix
+	//this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size , sizeof(int*));
+	//for (int i = 0; i < this->curLevel.size; i++)
+	//{
+	//	this->curLevel.bridgesCoordinates[i] = (int*)calloc(this->curLevel.size, sizeof(int));
+	//	ilClicked[i] = 0;
+	//}
+	//
+	// //Initialize line positions
+	//this->curLevel.bridgesCoordinates[0][3] = 1;
+	//this->curLevel.bridgesCoordinates[0][4] = 5;
+	//this->curLevel.bridgesCoordinates[1][2] = 2;
+	//this->curLevel.bridgesCoordinates[2][4] = 7;
+	//this->curLevel.bridgesCoordinates[2][8] = 2;
+	//this->curLevel.bridgesCoordinates[3][4] = 2;
+	//this->curLevel.bridgesCoordinates[4][5] = 3;
+	//this->curLevel.bridgesCoordinates[5][6] = 3;
+	//this->curLevel.bridgesCoordinates[6][7] = 2;
+	//this->curLevel.bridgesCoordinates[6][9] = 1;
+	//this->curLevel.bridgesCoordinates[6][12] = 5;
+	//this->curLevel.bridgesCoordinates[7][10] = 2;
+	//this->curLevel.bridgesCoordinates[8][11] = 1;
+	//this->curLevel.bridgesCoordinates[9][10] = 4;
+	//this->curLevel.bridgesCoordinates[10][12] = 6;
+	//this->curLevel.bridgesCoordinates[10][13] = 1;
+	//this->curLevel.bridgesCoordinates[11][13] = 6;
+	//this->curLevel.bridgesCoordinates[11][15] = 4;
+	//this->curLevel.bridgesCoordinates[12][17] = 3;
+	//this->curLevel.bridgesCoordinates[12][18] = 2;
+	//this->curLevel.bridgesCoordinates[13][14] = 2;
+	//this->curLevel.bridgesCoordinates[13][16] = 3;
+	//this->curLevel.bridgesCoordinates[15][16] = 2;
+	
 
 	// //Initialize lines matrix
 	//this->curLevel.bridgesCoordinates = (int**)calloc(this->curLevel.size , sizeof(int*));
@@ -409,8 +506,8 @@ void Game::initIsland()
 
 
 
-	/*writeLevel("level2.dat");
-	readLevel("level2.dat");*/
+	/*writeLevel("level4.dat");
+	readLevel("level4.dat");*/
 
 	// Print matrix values
 	/*for (int i = 0; i < ILNUMLEVEL1; i++)
@@ -447,7 +544,7 @@ void Game::initIsland()
 
 void Game::initAiEnemy()
 {
-	this->ai = new AiAgressive(curLevel);
+	//this->ai = new AiAgressive(curLevel);
 	//this->ai = new AiDijkstra(curLevel);
 }
 

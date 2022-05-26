@@ -17,30 +17,31 @@ int main()
 
 	SCREENTYPE curScreen = MENU;
 
-	Game* game = new Game(window, curScreen, 1, 1);
+	//Game* game = new Game(window, curScreen, 3, 2);
 
+	//curScreen = GAME;
+	//while (curScreen == GAME)//(window->isOpen())
+	//{
+	//	game->Run();
+	//}
+	
+
+	
+
+	ScMenu* scMenu = new ScMenu(window, curScreen);
+	ScCredits* scCredits = new ScCredits(window, curScreen);
+	ScLevelSelect* scLevelSelect = new ScLevelSelect(window, curScreen);
+	std::vector<Screen*> allScreens;
+	allScreens.push_back(scMenu);
+	allScreens.push_back(scCredits);
+	allScreens.push_back(scLevelSelect);
 	while (curScreen != EXIT)//(window->isOpen())
 	{
-		game->Run();
+		allScreens.at(curScreen)->Run();
 	}
-	
-
-	
-
-	//ScMenu* scMenu = new ScMenu(window, curScreen);
-	//ScCredits* scCredits = new ScCredits(window, curScreen);
-	//ScLevelSelect* scLevelSelect = new ScLevelSelect(window, curScreen);
-	//std::vector<Screen*> allScreens;
-	//allScreens.push_back(scMenu);
-	//allScreens.push_back(scCredits);
-	//allScreens.push_back(scLevelSelect);
-	//while (curScreen != EXIT)//(window->isOpen())
-	//{
-	//	allScreens.at(curScreen)->Run();
-	//}
-	//for (auto sc : allScreens)
-	//{
-	//	delete sc;
-	//}
+	for (auto sc : allScreens)
+	{
+		delete sc;
+	}
 	return 0;
 }

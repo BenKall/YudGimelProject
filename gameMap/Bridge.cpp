@@ -37,11 +37,11 @@ Bridge::Bridge(sf::Vector2f startPos, sf::Vector2f endPos, int weight, int scree
 	// so the text won't end up on the actual bridge
 	if (brQuarterAngle > 45)
 	{
-		this->brText.move(brText.getCharacterSize(), 0);
+		this->brText.move(brText.getCharacterSize() / 4, 0);
 	}
 	else
 	{
-		this->brText.move(0, brText.getCharacterSize());
+		this->brText.move(0, brText.getCharacterSize() / 4);
 	}
 	//this->brText.setPosition(brShape.getPosition().x + brShape.getGlobalBounds().width / 2, brShape.getPosition().y + brShape.getGlobalBounds().height / 2);
 	//this->brText.setPosition(brShape.getPosition().x + abs(brVector.x) / 2, brShape.getPosition().y + abs(brVector.y) / 2);

@@ -19,6 +19,7 @@
 #include "AiEnemy.h"
 #include "AiDijkstra.h"
 #include "AiAgressive.h"
+#include "BtnOnlyText.h"
 
 class Game :
 	public Screen
@@ -109,7 +110,14 @@ private:
 	//Ai
 	AiEnemy *ai;
 
+	//Level
+	sf::String levelString;
+
+	//Back button
+	BtnOnlyText* backButton;
+
 	//private functions
+	void initChosenLevelAndAi(int levelNum, int aiNum);
 	void initWindow(sf::RenderWindow* window);
 	void initIsland();
 	void initAiEnemy();

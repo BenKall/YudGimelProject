@@ -2,6 +2,7 @@
 
 ScLevelSelect::ScLevelSelect(sf::RenderWindow * window, SCREENTYPE & curScreen) : Screen(window, curScreen)
 {
+	this->curScreen = &curScreen;
 	this->window = window;
 	this->backgroundSprite = new sf::Sprite(AssetManager::GetTexture("Assets/Textures/antWarsBackground.png"));
 	this->backgroundSprite->setScale(
@@ -56,17 +57,17 @@ ScLevelSelect::~ScLevelSelect()
 //Update buttons and make sure only one level button and one ai button is picked
 void ScLevelSelect::UpdateElements()
 {
-	bool flagLvlClicked = false;
+	int lvlClickedNum = -1;
 	for (int i = 0; i < lvlClicked.size(); i++)
 	{
 		if (lvlClicked.at(i) == 1)
-			flagLvlClicked = true;
+			lvlClickedNum = i;
 	}
 	for (int i = 0; i < lvlButtons.size(); i++)
 	{
 		if (lvlButtons.at(i)->CheckMouse(this->mousePosView))
 		{
-			if (!flagLvlClicked || lvlClicked.at(i) == 1)
+			if (lvlClickedNum == -1 || lvlClicked.at(i) == 1)
 			{
 				if (lvlButtons.at(i)->isButtonClicked())
 					lvlClicked.at(i) = 1;
@@ -78,17 +79,17 @@ void ScLevelSelect::UpdateElements()
 				lvlButtons.at(i)->clickButton();
 		}
 	}
-	bool flagAiClicked = false;
+	int aiClickedNum = -1;
 	for (int i = 0; i < aiClicked.size(); i++)
 	{
 		if (aiClicked.at(i) == 1)
-			flagAiClicked = true;
+			aiClickedNum = i;
 	}
 	for (int i = 0; i < aiButtons.size(); i++)
 	{
 		if (aiButtons.at(i)->CheckMouse(this->mousePosView))
 		{
-			if (!flagAiClicked || aiClicked.at(i) == 1)
+			if (aiClickedNum == -1 || aiClicked.at(i) == 1)
 			{
 				if (aiButtons.at(i)->isButtonClicked())
 					aiClicked.at(i) = 1;
@@ -109,13 +110,19 @@ void ScLevelSelect::UpdateElements()
 				Reset();// if this was clicked it need to clear the data, set it to initial values
 			if (btn->getToScreen() == GAME)
 			{
-				if (flagAiClicked && flagLvlClicked)
+				if (aiClickedNum != -1 && lvlClickedNum != -1)
 				{
-					Reset();
+					Game* game = new Game(window, *this->curScreen, lvlClickedNum + 1, aiClickedNum + 1);
+
+					while (*this->curScreen == GAME)//(window->isOpen())
+					{
+						game->Run();
+					}
+					//Reset();
 				}
 				else
 				{
-					curScreen = GAMESELECT;
+					*this->curScreen = GAMESELECT;
 				}
 			}
 		}

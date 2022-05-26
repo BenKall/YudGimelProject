@@ -11,6 +11,10 @@
 #include "ScCredits.h"
 #include "BtnOnlyText.h"
 #include "BtnClick.h"
+#include "Game.h"
+#include "AiEnemy.h"
+#include "AiAgressive.h"
+#include "AiDijkstra.h"
 class ScLevelSelect :
 	public Screen
 {
@@ -21,6 +25,7 @@ public:
 	void Render();
 	void Reset();
 private:
+	SCREENTYPE* curScreen;
 	std::vector<BtnClick*> lvlButtons;
 	std::vector<BtnClick*> aiButtons;
 	std::vector<BtnOnlyText*> txtButtons;

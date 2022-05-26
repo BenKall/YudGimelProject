@@ -2,7 +2,7 @@
 
 Island::Island(sf::Vector2f pos, int antsContained, ISLANDSTATUS status)
 {
-	this->ilShape.setRadius(40.f);
+	this->ilShape.setRadius(80.f);
 	this->ilShape.setOutlineColor(DEFAULTCOLOR);
 	this->ilShape.setOutlineThickness(4.f);
 	this->ilTexture = AssetManager::GetTexture("Assets/Textures/dirt_circle1.png");//.loadFromFile("Assets/Textures/dirt_circle1.png"); //
